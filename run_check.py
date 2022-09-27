@@ -25,12 +25,41 @@ def check_qb(main_url,login_param,max_num,max_addtime,rss_item,rule):
             # 批量已读订阅源
             mark_Read(session, main_url, rss_item)
             # send_msg(token, '暂无可删除的超时种子')
-        else:
-            logger.warning("【节点：存在超时添加种子，删除部分种子】")
-            for del_torrents in check_del_torrent:
-                # 打印已移除的种子
-                logger.info("已移除种子：{0}".format(del_torrents['name']))
-                send_msg(token, '删除种子',del_torrents['name'])
+        elif len(check_del_torrent) >= 1:
+            logger.warning("【节点：存在超时添加种子，开始判断是否删除部分种子】")
+            # 刷新并获取所有rss项目数据
+            rss_data = get_rss_items(session, main_url, rss_item)
+            # 根据规则过滤有效的种子
+            valid_rss = filter_rss(rss_data, rss_item, rule)
+            if valid_rss == []:
+                logger.warning("【节点：无可用的有效种子，暂不删除过期种子】")
+                # 批量已读订阅源
+                mark_Read(session, main_url, rss_item)
+            elif len(valid_rss) > 1:
+                logger.warning("【节点：找到可用的有效种子，开始删除过期种子并新增种子】")
+                # 对比删除种子数量和可用的有效种子数量，取其中的较小值操作
+                min_num = min(len(check_del_torrent),len(valid_rss))
+                # 按种子的添加时间戳升序排列，便于先删除旧种
+                sort_check_del_torrent = sorted(check_del_torrent, key=lambda k: k['added_on'])
+                for count in range(0, min_num):
+                    del_torrent = sort_check_del_torrent[count]
+                    # add_time = del_torrents['added_on']
+                    del_hash = del_torrent['hash']
+                    del_name = del_torrent['name']
+                    del_torrents(session, main_url, del_hash, del_name)
+                    # 打印已移除的种子
+                    logger.info("已移除种子：{0}".format(del_torrent['name']))
+                    # 获取第x个有效种子
+                    new_torrent = valid_rss[count]
+                    torrent_url = new_torrent['torrentURL']
+                    torrent_title = new_torrent['title']
+                    add_torrents(session, main_url, torrent_url, torrent_title)
+                    logger.info("新增种子：{0}".format(torrent_title))
+                    msg = '删除种子：' + del_name + '，新增种子：' + torrent_title
+                    send_msg(token, '删除旧种，并新增推送种子', msg)
+                    # send_msg(token, '删除种子',del_torrents['name'])
+                mark_Read(session, main_url, rss_item)
+
     else:
         logger.warning("【节点：未达到种子数做种最大值，开始拉取rss尝试添加】")
         # 计算与最大值的差值
@@ -50,7 +79,7 @@ def check_qb(main_url,login_param,max_num,max_addtime,rss_item,rule):
             # 有效种子的数量
             valid_num = len(valid_rss)
             # 批量添加种子
-            for count in range(0,min(valid_num,missing_num)): #有效种子数和差值比较，取小的值，防止发送过多种子或数组越界报错
+            for count in range(0,min(valid_num,missing_num)):  # 有效种子数和差值比较，取小的值，防止发送过多种子或数组越界报错
                 torrent = valid_rss[count]
                 torrent_url = torrent['torrentURL']
                 torrent_title = torrent['title']

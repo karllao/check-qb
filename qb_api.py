@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def login(main_url,param):
+def login(main_url, param):
     """
     登录获取cookie
     :param main_url:
@@ -41,7 +41,7 @@ def get_torrents_info(session,main_url):
         'Referer': main_url,
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
     }
-    #此时的session发请求带有cookies，该cookie包含手动添加和发起url获得的cookie
+    # 此时的session发请求带有cookies，该cookie包含手动添加和发起url获得的cookie
     response = session.get(url=main_url + url,headers=headers)
     data = response.json()
     # logger.info(data)
@@ -211,7 +211,7 @@ def filter_rss(rss_data,rss_item,rule):
 
 def check_torrents_addtime(session,main_url,max_addtime):
     """
-    检查种子添加时间，超过指定时间删除
+    检查种子添加时间，是否超过指定时间
     :param session:
     :param main_url:
     :return:
@@ -226,13 +226,13 @@ def check_torrents_addtime(session,main_url,max_addtime):
     check_del_torrent = []
     for torrent in torrents_info:
         add_time = torrent['added_on']
-        hash = torrent['hash']
+        # hash = torrent['hash']
         name = torrent['name']
         torrent_size = torrent['total_size']/1024/1024/1024
         if now_time - add_time > max_addtime:
             check_del_torrent.append(torrent)
-            del_torrents(session,main_url,hash,name)
-            logger.info("删除种子：{0},大小：{1} GB".format(name,round(torrent_size, 2)))
+            # del_torrents(session,main_url,hash,name)
+            logger.info("已超时种子：{0},大小：{1} GB".format(name,round(torrent_size, 2)))
         else:
             logger.info("未过期：{0},大小：{1} GB".format(name,round(torrent_size, 2)))
     # logger.info(check_del_torrent)
