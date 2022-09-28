@@ -35,7 +35,7 @@ def check_qb(main_url,login_param,max_num,max_addtime,rss_item,rule):
                 logger.warning("【节点：无可用的有效种子，暂不删除过期种子】")
                 # 批量已读订阅源
                 mark_Read(session, main_url, rss_item)
-            elif len(valid_rss) > 1:
+            elif len(valid_rss) > 0:
                 logger.warning("【节点：找到可用的有效种子，开始删除过期种子并新增种子】")
                 # 对比删除种子数量和可用的有效种子数量，取其中的较小值操作
                 min_num = min(len(check_del_torrent),len(valid_rss))
