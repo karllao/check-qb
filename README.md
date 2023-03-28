@@ -10,6 +10,15 @@
 
 ## 使用
 
+先编辑好congfig.py文件里的配置
+
+### windows:
+
 第一种，支持crontab表达式可以自定义时间： 编辑crontab.txt定义定时执行，已存在默认命令，每天8点-23点每2分钟执行一次 命令行运行：start_crontab.bat
 
 第二种方法，运行start_check.bat 60秒执行一次
+
+### linux:
+
+写个crontab，运行run_check.py文件，例如*/2 8-23 * * * python run_check.py
+
