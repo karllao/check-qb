@@ -18,7 +18,7 @@ class main_config:
     # 用于check_torrents_addtime()方法的种子最大添加时间，超过则删除
     max_addtime = 43200
 
-    # 过滤规则
+    # 过滤规则，这里的规则是只选1-6GB的资源下载
     rule = re.compile('(?<=\[)[1-6]{1}\.\d+(?=\sGB\])')
 
     # rss订阅组名称
