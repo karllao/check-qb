@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+node_modules/
+check_qb/static/
+frontend/playwright-report/
+frontend/test-results/
+frontend/*.tsbuildinfo
+.check-qb/
+*.sqlite3*
+*.key
+.env

@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "check-qb"
+version = "2.0.0"
+description = "A local-first qBittorrent automation dashboard"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
+dependencies = [
+  "fastapi==0.115.12",
+  "uvicorn==0.34.2",
+  "httpx==0.28.1",
+  "APScheduler==3.11.0",
+  "cryptography==44.0.3",
+  "filelock==3.18.0",
+  "platformdirs==4.3.8",
+  "tzdata==2025.2",
+  "bencodepy==0.9.5",
+  "regex==2024.11.6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.5", "ruff==0.11.10"]
+
+[project.scripts]
+check-qb = "check_qb.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["check_qb*"]
+
+[tool.setuptools.package-data]
+check_qb = ["static/**/*", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

@@ -1,11 +1,8 @@
 @echo off
-echo 当前盘符和路径：%~dp0
-echo 当前盘符：%~d0
-cd %~d0
-cd %~dp0
-:abc
-python run_check.py
-ping -n 60 127.1 >nul 2>nul
-echo =====================================================================
-echo =====================================================================
-goto abc
+cd /d "%~dp0"
+if exist ".venv\Scripts\python.exe" (
+  ".venv\Scripts\python.exe" -m check_qb.cli serve %*
+) else (
+  python -m check_qb.cli serve %*
+)
+pause
