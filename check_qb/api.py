@@ -142,7 +142,11 @@ def create_app(store: Store | None = None, service: Service | None = None, setup
             except Timeout:
                 pass
             if not store.get("admin"):
-                print(f"\n首次设置凭据（仅本次启动有效）：{bootstrap}\n", flush=True)
+                try:
+                    print(f"\n首次设置凭据（仅本次启动有效）：{bootstrap}\n", flush=True)
+                except UnicodeEncodeError:
+                    # Direct ASGI launches may use a legacy Windows stdout encoding.
+                    print(f"\nSetup token (valid for this startup only): {bootstrap}\n", flush=True)
             reschedule()
             scheduler.start()
             yield

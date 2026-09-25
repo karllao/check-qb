@@ -1,3 +1,5 @@
+import io
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -16,6 +18,23 @@ def login(client):
     )
     assert response.status_code == 200
     client.headers["X-CSRF-Token"] = response.json()["csrf"]
+
+
+@pytest.mark.parametrize("encoding", ["cp1252", "ascii", "utf-8"])
+def test_startup_with_redirected_stdout(store, service, monkeypatch, encoding):
+    buffer = io.BytesIO()
+    with io.TextIOWrapper(buffer, encoding=encoding, errors="strict") as stdout:
+        with monkeypatch.context() as patch:
+            patch.setattr("sys.stdout", stdout)
+            with TestClient(create_app(store, service, setup_token="setup-test")) as client:
+                assert client.get("/healthz").status_code == 200
+                output = buffer.getvalue().decode(encoding)
+                assert "setup-test" in output
+                if encoding == "utf-8":
+                    assert "首次设置凭据" in output
+                else:
+                    assert "Setup token" in output
+                login(client)
 
 
 def test_setup_and_auth_boundary(client):

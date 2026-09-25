@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: {
     command: `"${python}" -m tests.ui_server`,
     cwd: "..",
-    env: { PYTHONPATH: "." },
+    env: { PYTHONPATH: ".", PYTHONIOENCODING: "utf-8" },
     url: "http://127.0.0.1:8877/healthz",
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
